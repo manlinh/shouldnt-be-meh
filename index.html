@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>shouldn't meh ;) </title>
+  <title>shouldn't meh</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -42,16 +42,21 @@
   </div>
 
   <script>
-    let likeCounter = 0; // Initialize the like counter
     const likeButton = document.getElementById('likeButton');
     const likeCount = document.getElementById('likeCount');
+
+    // Initialize the like counter from localStorage if available, else set it to 0
+    let likeCounter = localStorage.getItem('likeCount') ? parseInt(localStorage.getItem('likeCount')) : 0;
+    likeCount.textContent = likeCounter;  // Set the initial like count from localStorage
 
     // Function to increment the like count
     likeButton.addEventListener('click', () => {
       likeCounter++; // Increment the counter
       likeCount.textContent = likeCounter; // Update the count display
+      localStorage.setItem('likeCount', likeCounter); // Store the updated count in localStorage
     });
   </script>
 
 </body>
 </html>
+
