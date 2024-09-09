@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>shouldn't meh ;) </title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+    #likeButton {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    #likeButton:hover {
+      background-color: #0056b3;
+    }
+    #likeCount {
+      font-size: 1.5em;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Audio Player -->
+  <audio src="https://raw.githubusercontent.com/manlinh/shouldnt/main/shouldnt_be_cover.m4a" type="audio/x-m4a" controls autoplay>
+    <code>Your browser doesn't support audio tags</code>
+  </audio>
+
+  <!-- Like Button and Like Count -->
+  <div>
+    <button id="likeButton">Like</button>
+    <span id="likeCount">0</span>
+  </div>
+
+  <script>
+    let likeCounter = 0; // Initialize the like counter
+    const likeButton = document.getElementById('likeButton');
+    const likeCount = document.getElementById('likeCount');
+
+    // Function to increment the like count
+    likeButton.addEventListener('click', () => {
+      likeCounter++; // Increment the counter
+      likeCount.textContent = likeCounter; // Update the count display
+    });
+  </script>
+
+</body>
+</html>
