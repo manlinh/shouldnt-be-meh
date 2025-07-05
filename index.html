@@ -75,7 +75,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
         import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
+        // Removed: import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
 
         // Global variables provided by the environment
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
@@ -91,7 +91,7 @@
                 storageBucket: "meh-likes.firebasestorage.app",
                 messagingSenderId: "234059621506",
                 appId: "1:234059621506:web:51eb832bbdff9b9c04c09b",
-                measurementId: "G-CBE1P2HWXE"
+                measurementId: "G-CBE1P2HWXE" // Kept in config, but not used for initialization
             };
         }
 
@@ -110,7 +110,7 @@
         let app;
         let db;
         let auth;
-        let analytics;
+        // Removed: let analytics;
         let userId = null; // To store the authenticated user ID
 
         // Initialize Firebase and authenticate
@@ -121,19 +121,7 @@
                 db = getDatabase(app);
                 auth = getAuth(app);
 
-                // Conditionally initialize analytics only if measurementId is present
-                if (firebaseConfig.measurementId) {
-                    try {
-                        analytics = getAnalytics(app);
-                        console.log("Firebase Analytics initialized successfully.");
-                    } catch (analyticsError) {
-                        console.warn("Could not initialize Firebase Analytics:", analyticsError);
-                        // Do not re-throw, allow the rest of the app to function
-                    }
-                } else {
-                    console.log("No measurementId found in Firebase config. Skipping Analytics initialization.");
-                }
-
+                // Removed: Conditional analytics initialization
                 console.log("Firebase app initialized successfully.");
 
                 // Authenticate user
