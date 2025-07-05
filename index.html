@@ -75,15 +75,42 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js"; // Import getAnalytics
 
         // Global variables provided by the environment
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        let firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+
+        // Use the provided Firebase config, with a fallback if __firebase_config is empty or incomplete
+        if (Object.keys(firebaseConfig).length === 0 || !firebaseConfig.projectId) {
+            console.warn("Using user-provided fallback Firebase config as __firebase_config is incomplete or missing.");
+            firebaseConfig = {
+                apiKey: "AIzaSyCoqH0uBmolDOfNStTFOpEgYl89ZbTZsv8",
+                authDomain: "meh-likes.firebaseapp.com",
+                projectId: "meh-likes",
+                storageBucket: "meh-likes.firebasestorage.app",
+                messagingSenderId: "234059621506",
+                appId: "1:234059621506:web:51eb832bbdff9b9c04c09b",
+                measurementId: "G-CBE1P2HWXE" // Added from user's config
+            };
+        }
+
+        // Ensure databaseURL is explicitly set for Realtime Database
+        if (!firebaseConfig.databaseURL && firebaseConfig.projectId) {
+            firebaseConfig.databaseURL = `https://${firebaseConfig.projectId}-default-rtdb.firebaseio.com`;
+        } else if (!firebaseConfig.databaseURL && !firebaseConfig.projectId) {
+            console.error("Cannot determine Firebase Database URL: projectId is missing.");
+            document.getElementById("jsonOutput").textContent = "Error: Firebase Project ID is missing. Cannot connect to database.";
+            // Prevent further execution if critical config is missing
+            throw new Error("Firebase Project ID is missing.");
+        }
+
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
         let app;
         let db;
         let auth;
+        let analytics; // Declare analytics variable
         let userId = null; // To store the authenticated user ID
 
         // Initialize Firebase and authenticate
@@ -92,6 +119,7 @@
                 app = initializeApp(firebaseConfig);
                 db = getDatabase(app);
                 auth = getAuth(app);
+                analytics = getAnalytics(app); // Initialize analytics
 
                 // Authenticate user
                 if (initialAuthToken) {
