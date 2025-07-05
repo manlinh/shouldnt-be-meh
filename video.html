@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Video Tab</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f4f4;
+        }
+        body::-webkit-scrollbar {
+            display: none;
+        }
+        body {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center py-8 px-4 sm:px-6 lg:px-8">
+
+    <h1 class="text-4xl font-extrabold text-gray-900 mb-8 rounded-lg p-4 bg-gradient-to-r from-pink-400 to-purple-500 text-white shadow-lg">
+        ▶️ Video Content
+    </h1>
+
+    <!-- Navigation Tab -->
+    <nav class="mb-8 w-full max-w-2xl flex justify-center space-x-4">
+        <a href="index.html" class="px-6 py-3 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-700 transition duration-300 ease-in-out transform hover:scale-105 font-semibold">
+            🎵 Songs
+        </a>
+        <a href="video.html" class="px-6 py-3 bg-pink-600 text-white rounded-lg shadow-md hover:bg-pink-700 transition duration-300 ease-in-out transform hover:scale-105 font-semibold">
+            ▶️ Video Tab
+        </a>
+    </nav>
+
+    <div class="w-full max-w-2xl bg-white p-6 rounded-xl shadow-lg text-center">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Welcome to the Video Tab!</h2>
+        <p class="text-gray-600 mb-4">Here's your embedded video:</p>
+        <div class="relative" style="padding-bottom: 56.25%; height: 0;">
+            <!-- YouTube video embed -->
+            <iframe
+                class="absolute top-0 left-0 w-full h-full rounded-lg"
+                src="https://www.youtube.com/embed/ohiy-dFrdiw"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+            ></iframe>
+        </div>
+        <p class="text-sm text-gray-500 mt-4">This video is embedded from YouTube.</p>
+    </div>
+
+</body>
+</html>
