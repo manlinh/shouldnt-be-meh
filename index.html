@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>meh</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Meh Songs</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -29,44 +29,62 @@
   </style>
 </head>
 <body>
+
 <h1>Meh songs Archived</h1>
+
 <h2>shouldn't be</h2>
-  <!-- Audio Player -->
-  <audio src="https://raw.githubusercontent.com/manlinh/shouldnt/main/shouldnt_be_cover.m4a" type="audio/x-m4a" controls autoplay>
-    <code>Your browser doesn't support audio tags</code>
-  </audio>
+<audio src="https://raw.githubusercontent.com/manlinh/shouldnt/main/shouldnt_be_cover.m4a" controls></audio>
+
 <h2>simple things</h2>
-  <!-- Audio Player -->
-  <audio src="https://raw.githubusercontent.com/manlinh/shouldnt/main/simple_things_cover.m4a" type="audio/x-m4a" controls autoplay>
-    <code>Your browser doesn't support audio tags</code>
-  </audio>
-  <h2>trust me</h2>
-  <!-- Audio Player -->
-  <audio src="https://raw.githubusercontent.com/manlinh/shouldnt/main/trust_me_cover.m4a" type="audio/x-m4a" controls autoplay>
-    <code>Your browser doesn't support audio tags</code>
-  </audio>
-  <!-- Like Button and Like Count -->
-  <div>
-    <button id="likeButton">Like</button>
-    <span id="likeCount">0</span>
-  </div>
+<audio src="https://raw.githubusercontent.com/manlinh/shouldnt/main/simple_things_cover.m4a" controls></audio>
 
-  <script>
-    const likeButton = document.getElementById('likeButton');
-    const likeCount = document.getElementById('likeCount');
+<h2>trust me</h2>
+<audio src="https://raw.githubusercontent.com/manlinh/shouldnt/main/trust_me_cover.m4a" controls></audio>
 
-    // Initialize the like counter from localStorage if available, else set it to 0
-    let likeCounter = localStorage.getItem('likeCount') ? parseInt(localStorage.getItem('likeCount')) : 0;
-    likeCount.textContent = likeCounter;  // Set the initial like count from localStorage
+<div>
+  <button id="likeButton">Like</button>
+  <span id="likeCount">0</span>
+</div>
 
-    // Function to increment the like count
-    likeButton.addEventListener('click', () => {
-      likeCounter++; // Increment the counter
-      likeCount.textContent = likeCounter; // Update the count display
-      localStorage.setItem('likeCount', likeCounter); // Store the updated count in localStorage
-    });
-  </script>
 <iframe frameborder="0" width="100%" height="125" src="https://www.smule.com/recording/chelsea-cutler-sometimes/2746350661_4372793653/frame"></iframe>
+
+<!-- Firebase SDK: Modular ES Modules -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
+  import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCoqH0uBmolDOfNStTFOpEgYl89ZbTZsv8",
+    authDomain: "meh-likes.firebaseapp.com",
+    projectId: "meh-likes",
+    storageBucket: "meh-likes.firebasestorage.app",
+    messagingSenderId: "234059621506",
+    appId: "1:234059621506:web:51eb832bbdff9b9c04c09b",
+    measurementId: "G-CBE1P2HWXE"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const db = getDatabase(app);
+
+  const likeRef = ref(db, 'likes/count'); // Path in your database
+
+  const likeButton = document.getElementById('likeButton');
+  const likeCount = document.getElementById('likeCount');
+
+  // Update UI in real-time
+  onValue(likeRef, snapshot => {
+    const count = snapshot.val() || 0;
+    likeCount.textContent = count;
+  });
+
+  // When clicked, increase like count using a safe transaction
+  likeButton.addEventListener('click', () => {
+    runTransaction(likeRef, current => (current || 0) + 1);
+  });
+</script>
+
 </body>
 </html>
-
