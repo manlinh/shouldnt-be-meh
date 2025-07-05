@@ -27,4 +27,87 @@
       border: none;
       padding: 8px 16px;
       margin: 5px;
-      b
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    pre {
+      background: #fff;
+      text-align: left;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 40px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🎵 Meh Songs Archived</h1>
+
+<!-- Audio + Like Buttons -->
+<div>
+  <h2>shouldn't be</h2>
+  <audio src="https://raw.githubusercontent.com/manlinh/shouldnt/main/shouldnt_be_cover.m4a" controls></audio>
+  <button onclick="like('shouldnt_be')">👍 Like</button>
+
+  <h2>simple things</h2>
+  <audio src="https://raw.githubusercontent.com/manlinh/shouldnt/main/simple_things_cover.m4a" controls></audio>
+  <button onclick="like('simple_things')">👍 Like</button>
+
+  <h2>trust me</h2>
+  <audio src="https://raw.githubusercontent.com/manlinh/shouldnt/main/trust_me_cover.m4a" controls></audio>
+  <button onclick="like('trust_me')">👍 Like</button>
+</div>
+
+<!-- JSON Viewer -->
+<h2>📦 Current Likes (JSON)</h2>
+<pre id="jsonOutput">Loading...</pre>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCoqH0uBmolDOfNStTFOpEgYl89ZbTZsv8",
+    authDomain: "meh-likes.firebaseapp.com",
+    projectId: "meh-likes",
+    storageBucket: "meh-likes.firebasestorage.app",
+    messagingSenderId: "234059621506",
+    appId: "1:234059621506:web:51eb832bbdff9b9c04c09b"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  // Like function per song
+  window.like = (songKey) => {
+    const songRef = ref(db, `likes/${songKey}`);
+    runTransaction(songRef, current => (current || 0) + 1);
+  };
+
+  // Load and update live JSON display
+  async function loadLikesJSON() {
+    try {
+      const response = await fetch("https://meh-likes-default-rtdb.firebaseio.com/likes.json");
+      const data = await response.json();
+      document.getElementById("jsonOutput").textContent = JSON.stringify(data, null, 2);
+    } catch (error) {
+      document.getElementById("jsonOutput").textContent = "Failed to load data: " + error;
+    }
+  }
+
+  // Initial load + interval refresh
+  loadLikesJSON();
+  setInterval(loadLikesJSON, 10000);
+</script>
+
+</body>
+</html>
