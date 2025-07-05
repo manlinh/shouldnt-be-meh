@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Meh Songs + Live Likes</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom styles for the Inter font and general body styling */
@@ -27,9 +28,11 @@
         🎵 Meh Songs Archived
     </h1>
 
+    <!-- Audio + Like Buttons Section -->
     <div class="w-full max-w-2xl bg-white p-6 rounded-xl shadow-lg mb-10">
         <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Songs</h2>
 
+        <!-- Song 1: shouldn't be -->
         <div class="mb-8 p-4 bg-gray-50 rounded-lg shadow-inner">
             <h3 class="text-xl font-semibold text-gray-700 mb-3">shouldn't be</h3>
             <audio src="https://raw.githubusercontent.com/manlinh/shouldnt/main/shouldnt_be_cover.m4a" controls class="w-full mb-4 rounded-md"></audio>
@@ -38,6 +41,7 @@
             </button>
         </div>
 
+        <!-- Song 2: simple things -->
         <div class="mb-8 p-4 bg-gray-50 rounded-lg shadow-inner">
             <h3 class="text-xl font-semibold text-gray-700 mb-3">simple things</h3>
             <audio src="https://raw.githubusercontent.com/manlinh/shouldnt/main/simple_things_cover.m4a" controls class="w-full mb-4 rounded-md"></audio>
@@ -46,6 +50,7 @@
             </button>
         </div>
 
+        <!-- Song 3: trust me -->
         <div class="p-4 bg-gray-50 rounded-lg shadow-inner">
             <h3 class="text-xl font-semibold text-gray-700 mb-3">trust me</h3>
             <audio src="https://raw.githubusercontent.com/manlinh/shouldnt/main/trust_me_cover.m4a" controls class="w-full mb-4 rounded-md"></audio>
@@ -55,6 +60,7 @@
         </div>
     </div>
 
+    <!-- JSON Viewer Section -->
     <div class="w-full max-w-2xl bg-white p-6 rounded-xl shadow-lg">
         <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">📦 Current Likes (JSON)</h2>
         <div id="loadingIndicator" class="text-center text-gray-500 mb-4 hidden">Loading likes...</div>
@@ -63,12 +69,13 @@
         </pre>
     </div>
 
+    <!-- Firebase SDK -->
     <script type="module">
-        // Import Firebase modules from the specified CDN version (11.6.1)
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js"; // Import getAnalytics
+        // Import Firebase modules - using version 11.10.0 as per your config
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+        import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
 
         // Global variables provided by the environment
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
@@ -91,8 +98,9 @@
         // Ensure databaseURL is explicitly set for Realtime Database
         if (!firebaseConfig.databaseURL && firebaseConfig.projectId) {
             firebaseConfig.databaseURL = `https://${firebaseConfig.projectId}-default-rtdb.firebaseio.com`;
+            console.log("Constructed databaseURL:", firebaseConfig.databaseURL);
         } else if (!firebaseConfig.databaseURL && !firebaseConfig.projectId) {
-            console.error("Cannot determine Firebase Database URL: projectId is missing.");
+            console.error("Critical Error: Firebase Project ID is missing. Cannot determine Database URL.");
             document.getElementById("jsonOutput").textContent = "Error: Firebase Project ID is missing. Cannot connect to database.";
             throw new Error("Firebase Project ID is missing."); // Halt execution if critical config is missing
         }
@@ -107,18 +115,36 @@
 
         // Initialize Firebase and authenticate
         async function initializeFirebase() {
+            console.log("Attempting to initialize Firebase...");
             try {
                 app = initializeApp(firebaseConfig);
                 db = getDatabase(app);
                 auth = getAuth(app);
-                analytics = getAnalytics(app); // Initialize analytics
+
+                // Conditionally initialize analytics only if measurementId is present
+                if (firebaseConfig.measurementId) {
+                    try {
+                        analytics = getAnalytics(app);
+                        console.log("Firebase Analytics initialized successfully.");
+                    } catch (analyticsError) {
+                        console.warn("Could not initialize Firebase Analytics:", analyticsError);
+                        // Do not re-throw, allow the rest of the app to function
+                    }
+                } else {
+                    console.log("No measurementId found in Firebase config. Skipping Analytics initialization.");
+                }
+
+                console.log("Firebase app initialized successfully.");
 
                 // Authenticate user
                 if (initialAuthToken) {
+                    console.log("Signing in with custom token...");
                     await signInWithCustomToken(auth, initialAuthToken);
                 } else {
+                    console.log("Signing in anonymously...");
                     await signInAnonymously(auth);
                 }
+                console.log("Authentication initiated.");
 
                 // Listen for authentication state changes
                 onAuthStateChanged(auth, (user) => {
@@ -127,21 +153,32 @@
                         console.log("User authenticated:", userId);
                         setupRealtimeLikesListener(); // Start listening to database changes only after authentication
                     } else {
-                        console.log("No user is signed in.");
+                        console.log("No user is signed in. Attempting anonymous sign-in if not already.");
+                        // If onAuthStateChanged fires with no user, and we haven't tried anonymous, try it.
+                        // This handles cases where initialAuthToken might be null and anonymous sign-in failed.
+                        if (!initialAuthToken && !auth.currentUser) {
+                             signInAnonymously(auth).catch(err => console.error("Anonymous sign-in failed:", err));
+                        }
                         userId = null;
                         document.getElementById("jsonOutput").textContent = "Please sign in to view and like songs.";
                     }
                 });
 
             } catch (error) {
-                console.error("Error initializing Firebase or authenticating:", error);
+                console.error("Error during Firebase initialization or authentication:", error);
                 document.getElementById("jsonOutput").textContent = `Error: ${error.message}. Check console for details.`;
             }
         }
 
         // Function to set up the real-time listener for likes
         function setupRealtimeLikesListener() {
+            if (!db || !userId) {
+                console.warn("Database or user not ready for listener setup.");
+                return;
+            }
             const likesRef = ref(db, `artifacts/${appId}/public/data/likes`); // Use public data path
+            console.log("Setting up real-time listener for path:", `artifacts/${appId}/public/data/likes`);
+
             const jsonOutputElement = document.getElementById("jsonOutput");
             const loadingIndicator = document.getElementById("loadingIndicator");
 
@@ -152,6 +189,7 @@
             onValue(likesRef, (snapshot) => {
                 loadingIndicator.classList.add('hidden'); // Hide loading indicator once data is received
                 const data = snapshot.val();
+                console.log("Real-time data received:", data);
                 if (data) {
                     jsonOutputElement.textContent = JSON.stringify(data, null, 2);
                 } else {
@@ -159,27 +197,34 @@
                 }
             }, (error) => {
                 loadingIndicator.classList.add('hidden');
-                console.error("Error fetching real-time data:", error);
-                jsonOutputElement.textContent = "Failed to load real-time data: " + error.message;
+                console.error("Error fetching real-time data from Firebase:", error);
+                document.getElementById("jsonOutput").textContent = "Failed to load real-time data: " + error.message;
             });
         }
 
         // Global like function
         window.like = (songKey) => {
             if (!db || !userId) {
-                console.error("Firebase not initialized or user not authenticated.");
+                console.error("Attempted to like song, but Firebase is not initialized or user is not authenticated.");
                 const jsonOutputElement = document.getElementById("jsonOutput");
                 jsonOutputElement.textContent = "Please wait for authentication to complete before liking songs.";
                 return;
             }
 
             const songRef = ref(db, `artifacts/${appId}/public/data/likes/${songKey}`);
+            console.log(`Attempting to increment like for ${songKey} at path: artifacts/${appId}/public/data/likes/${songKey}`);
 
             runTransaction(songRef, (current) => {
-                return (current || 0) + 1; // Increment like count, initializing to 0 if null
+                const newValue = (current || 0) + 1;
+                console.log(`Transaction: current value for ${songKey} is ${current}, new value will be ${newValue}`);
+                return newValue; // Increment like count, initializing to 0 if null
             })
-            .then(() => {
-                console.log(`Successfully liked ${songKey}`);
+            .then((result) => {
+                if (result.committed) {
+                    console.log(`Successfully liked ${songKey}. New value: ${result.snapshot.val()}`);
+                } else {
+                    console.log(`Transaction for ${songKey} was aborted (not committed).`);
+                }
             })
             .catch((error) => {
                 console.error(`Transaction failed for ${songKey}:`, error);
