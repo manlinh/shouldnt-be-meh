@@ -26,7 +26,7 @@
         ▶️ Video Content
     </h1>
 
-    <!-- Navigation Tab -->
+    <!-- Main Navigation Tab -->
     <nav class="mb-8 w-full max-w-2xl flex justify-center space-x-4">
         <a href="index.html" class="px-6 py-3 bg-purple-600 text-white rounded-lg shadow-md hover:bg-purple-700 transition duration-300 ease-in-out transform hover:scale-105 font-semibold">
             🎵 Songs
@@ -36,21 +36,102 @@
         </a>
     </nav>
 
+    <!-- Sub-Navigation for Videos -->
+    <div class="mb-8 w-full max-w-2xl flex justify-center space-x-4 flex-wrap">
+        <button onclick="showVideo('lawn')" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-300 ease-in-out transform hover:scale-105 font-medium m-1">Lawn</button>
+        <button onclick="showVideo('bedroom')" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-300 ease-in-out transform hover:scale-105 font-medium m-1">Bedroom</button>
+        <button onclick="showVideo('mashhhh')" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-300 ease-in-out transform hover:scale-105 font-medium m-1">Mashhhh</button>
+    </div>
+
     <div class="w-full max-w-2xl bg-white p-6 rounded-xl shadow-lg text-center">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6">Welcome to the Video Tab!</h2>
-        <p class="text-gray-600 mb-4">Here's your embedded video:</p>
+        <h2 id="videoTitle" class="text-2xl font-bold text-gray-800 mb-6">Welcome to the Video Tab!</h2>
+        <p id="videoDescription" class="text-gray-600 mb-4">Select a sub-tab above to play a video.</p>
         <div class="relative" style="padding-bottom: 56.25%; height: 0;">
             <!-- YouTube video embed -->
             <iframe
+                id="mainVideoPlayer"
                 class="absolute top-0 left-0 w-full h-full rounded-lg"
-                src="https://www.youtube.com/embed/ohiy-dFrdiw"
+                src=""
                 frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen
             ></iframe>
         </div>
-        <p class="text-sm text-gray-500 mt-4">This video is embedded from YouTube.</p>
+        <button id="nextMashupBtn" onclick="nextMashup()" class="hidden mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-300 ease-in-out transform hover:scale-105">Next Mashup</button>
     </div>
+
+    <script>
+        // Data structure to hold video information for each tab
+        const videoData = {
+            'lawn': {
+                id: 'ohiy-dFrdiw',
+                title: 'Lawn Video',
+                description: 'This video is about the lawn and is embedded from YouTube.'
+            },
+            'bedroom': {
+                id: 'aYLvty3IraQ',
+                title: 'Bedroom Video',
+                description: 'This video is about the bedroom and is embedded from YouTube.'
+            },
+            'mashhhh': [
+                { id: 'rO4AwLSpdFg', title: 'Mashhhh Part 1', description: 'The first mashup video from YouTube.' },
+                { id: '5shGDR_V_W4', title: 'Mashhhh Part 2', description: 'The second mashup video from YouTube.' }
+            ]
+        };
+
+        let currentMashupIndex = 0; // Tracks which mashup video is currently playing
+
+        /**
+         * Updates the main video player and text based on the selected tab.
+         * @param {string} tabName - The name of the tab clicked ('lawn', 'bedroom', 'mashhhh').
+         */
+        function showVideo(tabName) {
+            const player = document.getElementById('mainVideoPlayer');
+            const videoTitleElement = document.getElementById('videoTitle');
+            const videoDescriptionElement = document.getElementById('videoDescription');
+            const nextMashupBtn = document.getElementById('nextMashupBtn');
+
+            // Hide the "Next Mashup" button by default for all tabs except 'mashhhh'
+            nextMashupBtn.classList.add('hidden');
+
+            if (tabName === 'mashhhh') {
+                currentMashupIndex = 0; // Reset mashup index when the tab is selected
+                const video = videoData.mashhhh[currentMashupIndex];
+                player.src = `https://www.youtube.com/embed/${video.id}`;
+                videoTitleElement.textContent = `▶️ ${video.title}`;
+                videoDescriptionElement.textContent = video.description;
+                // Show "Next Mashup" button if there's more than one mashup video
+                if (videoData.mashhhh.length > 1) {
+                    nextMashupBtn.classList.remove('hidden');
+                }
+            } else {
+                const video = videoData[tabName];
+                player.src = `https://www.youtube.com/embed/${video.id}`;
+                videoTitleElement.textContent = `▶️ ${video.title}`;
+                videoDescriptionElement.textContent = video.description;
+            }
+        }
+
+        /**
+         * Switches to the next mashup video in the 'mashhhh' sequence.
+         */
+        function nextMashup() {
+            // Cycle through the mashup videos
+            currentMashupIndex = (currentMashupIndex + 1) % videoData.mashhhh.length;
+            const video = videoData.mashhhh[currentMashupIndex];
+
+            const player = document.getElementById('mainVideoPlayer');
+            const videoTitleElement = document.getElementById('videoTitle');
+            const videoDescriptionElement = document.getElementById('videoDescription');
+
+            player.src = `https://www.youtube.com/embed/${video.id}`;
+            videoTitleElement.textContent = `▶️ ${video.title}`;
+            videoDescriptionElement.textContent = video.description;
+        }
+
+        // Initialize with the Lawn video when the page loads
+        window.onload = () => showVideo('lawn');
+    </script>
 
 </body>
 </html>
