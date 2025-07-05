@@ -3,86 +3,28 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Meh Songs</title>
+  <title>Meh Songs + Live Likes</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: Arial, monospace;
       text-align: center;
-      padding: 50px;
+      background: #f4f4f4;
+      padding: 20px;
     }
-    #likeButton {
+
+    h1, h2 {
+      margin-top: 30px;
+    }
+
+    audio {
+      display: block;
+      margin: 10px auto 30px;
+    }
+
+    button {
       background-color: #007bff;
       color: white;
       border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-top: 20px;
-    }
-    #likeButton:hover {
-      background-color: #0056b3;
-    }
-    #likeCount {
-      font-size: 1.5em;
-      margin-left: 10px;
-    }
-  </style>
-</head>
-<body>
-
-<h1>Meh songs Archived</h1>
-
-<h2>shouldn't be</h2>
-<audio src="https://raw.githubusercontent.com/manlinh/shouldnt/main/shouldnt_be_cover.m4a" controls></audio>
-
-<h2>simple things</h2>
-<audio src="https://raw.githubusercontent.com/manlinh/shouldnt/main/simple_things_cover.m4a" controls></audio>
-
-<h2>trust me</h2>
-<audio src="https://raw.githubusercontent.com/manlinh/shouldnt/main/trust_me_cover.m4a" controls></audio>
-
-<!-- Like button -->
-<div>
-  <button id="likeButton">Like</button>
-  <span id="likeCount">0</span>
-</div>
-
-<!-- Firebase SDK and Like Counter Logic -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
-  import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyCoqH0uBmolDOfNStTFOpEgYl89ZbTZsv8",
-    authDomain: "meh-likes.firebaseapp.com",
-    projectId: "meh-likes",
-    storageBucket: "meh-likes.firebasestorage.app",
-    messagingSenderId: "234059621506",
-    appId: "1:234059621506:web:51eb832bbdff9b9c04c09b",
-    measurementId: "G-CBE1P2HWXE"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  const db = getDatabase(app);
-
-  const likeRef = ref(db, 'likes/count');
-
-  const likeButton = document.getElementById('likeButton');
-  const likeCount = document.getElementById('likeCount');
-
-  // Realtime update from database
-  onValue(likeRef, snapshot => {
-    const count = snapshot.val() || 0;
-    likeCount.textContent = count;
-  });
-
-  // Increase like count on click
-  likeButton.addEventListener('click', () => {
-    runTransaction(likeRef, current => (current || 0) + 1);
-  });
-</script>
-
-</body>
-</html>
+      padding: 8px 16px;
+      margin: 5px;
+      b
