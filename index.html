@@ -41,12 +41,13 @@
 <h2>trust me</h2>
 <audio src="https://raw.githubusercontent.com/manlinh/shouldnt/main/trust_me_cover.m4a" controls></audio>
 
+<!-- Like button -->
 <div>
   <button id="likeButton">Like</button>
   <span id="likeCount">0</span>
 </div>
 
-<!-- Firebase SDK: Modular ES Modules -->
+<!-- Firebase SDK and Like Counter Logic -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
@@ -62,23 +63,22 @@
     measurementId: "G-CBE1P2HWXE"
   };
 
-  // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
   const db = getDatabase(app);
 
-  const likeRef = ref(db, 'likes/count'); // Path in your database
+  const likeRef = ref(db, 'likes/count');
 
   const likeButton = document.getElementById('likeButton');
   const likeCount = document.getElementById('likeCount');
 
-  // Update UI in real-time
+  // Realtime update from database
   onValue(likeRef, snapshot => {
     const count = snapshot.val() || 0;
     likeCount.textContent = count;
   });
 
-  // When clicked, increase like count using a safe transaction
+  // Increase like count on click
   likeButton.addEventListener('click', () => {
     runTransaction(likeRef, current => (current || 0) + 1);
   });
